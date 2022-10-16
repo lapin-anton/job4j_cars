@@ -10,7 +10,6 @@ import ru.job4j.cars.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class UserRepository {
@@ -76,7 +75,7 @@ public class UserRepository {
         Session session = sf.openSession();
         try {
             Query query = session.createQuery("from User order by id");
-            query.list().forEach(el -> rsl.add((User) el));
+            rsl = query.list();
         } catch (HibernateException e) {
             session.getTransaction().rollback();
         }
@@ -94,7 +93,7 @@ public class UserRepository {
             Query<User> query = session
                     .createQuery("from User as u where u.id = :fId", User.class)
                     .setParameter("fId", userId);
-            user = Optional.ofNullable(query.uniqueResult());
+            user = query.uniqueResultOptional();
         } catch (HibernateException e) {
             session.getTransaction().rollback();
         }
@@ -113,7 +112,7 @@ public class UserRepository {
             Query query = session
                     .createQuery("from User as u where u.login like :fKey")
                     .setParameter("fKey", "%" + key + "%");
-            query.list().forEach(el -> rsl.add((User) el));
+            rsl = query.list();
         } catch (HibernateException e) {
             session.getTransaction().rollback();
         }
@@ -132,7 +131,7 @@ public class UserRepository {
             Query<User> query = session
                     .createQuery("from User as u where u.login = :fLogin", User.class)
                     .setParameter("fLogin", login);
-            user = Optional.ofNullable(query.uniqueResult());
+            user = query.uniqueResultOptional();
         } catch (HibernateException e) {
             session.getTransaction().rollback();
         }
